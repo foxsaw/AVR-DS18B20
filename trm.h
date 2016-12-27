@@ -3,17 +3,24 @@
 // compiler: avr tools
 // device:   atmega328p @ 8MHz
 //
-// 25-12-16
+// 27-12-16
 //
 // file: trm.h
 //
 
 
+#include <stdint.h>
+#include <avr/io.h>
+#include <avr/interrupt.h>
 #include <util/delay.h>
-#include <stdio.h>
 
 
-#define DISINT
+#ifndef SET_BIT
+#define SET_BIT(reg, bit) (reg |= (1<<bit))
+#endif
+#ifndef CLR_BIT
+#define CLR_BIT(reg, bit) (reg &= (~(1<<bit)))
+#endif
 
 
 //*****************************************************************************
@@ -51,10 +58,7 @@ uint8_t trm_reset()
 //-----------------------------------------------------------------------------
 void trm_write_bit(uint8_t bit)
 	{
-#ifdef DISINT
-cli();
-#endif
-
+	cli();
 	TRM_LOW;
 	TRM_OUTPUT;
 	_delay_us(1);
@@ -63,10 +67,7 @@ cli();
 
 	_delay_us(60);
 	TRM_INPUT;
-
-#ifdef DISINT
-sei();
-#endif
+	sei();
 	}
 
 
@@ -75,10 +76,7 @@ uint8_t trm_read_bit(void)
 	{
 	uint8_t bit=0;
 
-#ifdef DISINT
-cli();
-#endif
-
+	cli();
 	TRM_LOW;
 	TRM_OUTPUT;
 	_delay_us(1);
@@ -90,10 +88,7 @@ cli();
 
 	_delay_us(45);
 
-#ifdef DISINT
-sei();
-#endif
-
+	sei();
 	return bit;
 	}
 
